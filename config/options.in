@@ -1,0 +1,5 @@
+@OVERLAY_PORTS_OPTION@
+--downloads-root=@VCPKG_DOWNLOADS_ROOT@
+--x-buildtrees-root=@VCPKG_BUILDTREES_ROOT@
+--x-packages-root=@VCPKG_PACKAGES_ROOT@
+--x-install-root=@VCPKG_INSTALL_ROOT@

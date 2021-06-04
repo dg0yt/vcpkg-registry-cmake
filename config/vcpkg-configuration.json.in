@@ -1,0 +1,17 @@
+{
+  "default-registry": {
+    "kind": "git",
+    "repository": "@REGISTRY_CHECKOUT@",
+    "baseline":   "@REGISTRY_HEAD@"
+  },
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "@VCPKG_ROOT@",
+      "baseline":   "@VCPKG_HEAD@",
+      "packages": [
+        @VCPKG_IMPORTS_LIST@
+      ]
+    }
+  ]
+}

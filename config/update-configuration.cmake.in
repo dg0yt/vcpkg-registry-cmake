@@ -1,0 +1,59 @@
+#
+# Copyright 2021 Kai Pastor <dg0yt@darc.de>
+#
+# License: MIT
+
+set(SOURCE_DIR        "@CMAKE_CURRENT_SOURCE_DIR@")
+set(BINARY_DIR        "@CMAKE_CURRENT_BINARY_DIR@")
+set(REGISTRY_CHECKOUT "@REGISTRY_CHECKOUT@")
+set(VCPKG_ROOT        "@VCPKG_ROOT@")
+set(VCPKG_IMPORTS     "@VCPKG_IMPORTS@")
+set(GIT_EXECUTABLE    "@GIT_EXECUTABLE@")
+
+execute_process(
+  COMMAND "${GIT_EXECUTABLE}" log -n 1 --format=%H
+  WORKING_DIRECTORY "${VCPKG_ROOT}"
+  OUTPUT_VARIABLE VCPKG_HEAD
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE result
+)
+if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Failed to retrieve vcpkg HEAD revision.")
+endif()
+
+if(REGISTRY_CHECKOUT)
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" log -n 1 --format=%H
+      WORKING_DIRECTORY "${REGISTRY_CHECKOUT}"
+      OUTPUT_VARIABLE REGISTRY_HEAD
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      RESULT_VARIABLE result
+    )
+    if(NOT result EQUAL 0)
+        message(FATAL_ERROR "Failed to retrieve custom registry HEAD revision SHA-1.")
+    endif()
+    configure_file(
+      "${BINARY_DIR}/all_ports"
+      "${VCPKG_ROOT}/all_ports"
+      COPYONLY
+    )
+else()
+    set(REGISTRY_CHECKOUT "${VCPKG_ROOT}")
+    set(REGISTRY_HEAD     "${VCPKG_HEAD}")
+endif()
+
+string(REPLACE  ";"  "\",\n        \""  VCPKG_IMPORTS_LIST "\"${VCPKG_IMPORTS}\"")
+
+configure_file(
+  "${SOURCE_DIR}/config/vcpkg-configuration.json.in"
+  "${VCPKG_ROOT}/vcpkg-configuration.json"
+  @ONLY
+)
+
+configure_file(
+  "${BINARY_DIR}/options.in"
+  "${VCPKG_ROOT}/options"
+  @ONLY
+)
+
+
