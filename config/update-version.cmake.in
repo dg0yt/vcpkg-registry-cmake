@@ -14,6 +14,7 @@ set(vcpkg             [[@vcpkg@]])
 
 include("${BINARY_DIR}/update-configuration.cmake")
 
+message(STATUS "Running vcpkg x-add-version ${PORT}")
 foreach(overwrite_option IN ITEMS "" "--overwrite-version")
     execute_process(
       COMMAND ${vcpkg} x-add-version "${PORT}"
@@ -25,7 +26,10 @@ foreach(overwrite_option IN ITEMS "" "--overwrite-version")
       OUTPUT_VARIABLE add_version_output
       RESULT_VARIABLE result
     )
-    if(NOT add_version_output MATCHES "--overwrite-version")
+    if(add_version_output MATCHES "No local Git SHA was found")
+        set(result 0)
+        break()
+    elseif(NOT add_version_output MATCHES "--overwrite-version")
         break()
     endif()
 endforeach()
