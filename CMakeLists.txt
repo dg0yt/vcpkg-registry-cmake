@@ -162,7 +162,10 @@ add_custom_target(vcpkg-configuration
 )
 
 # vcpkg completely
+string(REPLACE "@BINARY_DIR@" "${CMAKE_CURRENT_BINARY_DIR}" install_root "${VCPKG_INSTALL_ROOT}")
 add_custom_target(vcpkg
+  # https://github.com/microsoft/vcpkg/issues/18268
+  COMMAND "${CMAKE_COMMAND}" -E remove -f "${install_root}/vcpkg/vcpkg-lock.json"
   DEPENDS vcpkg vcpkg-root vcpkg-tool vcpkg-configuration
 )
 
